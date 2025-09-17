@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Scanner | Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Extra style to hide inactive tab */
+    .tab-pane {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .tab-pane.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Smooth transitions for showing/hiding elements */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .slide-up {
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Enhanced button animations */
+    .primary, .tab-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .primary:hover, .tab-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 255, 128, 0.3);
+    }
+
+    .primary:active, .tab-btn:active {
+      transform: translateY(0);
+      transition: all 0.1s ease;
+    }
+
+    /* Ripple effect */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Input field enhancements */
+    input[type="url"], input[type="file"] {
+      transition: all 0.3s ease;
+    }
+
+    input[type="url"]:focus {
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(0, 255, 128, 0.2);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .stats .pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .stats .pill.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stats .pill:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .meter-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    #resultBox {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin: 20px auto;
+      padding: 20px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    #resultBox.show-results {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gauge-wrap {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.6s ease;
+    }
+
+    .gauge-wrap.animate {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .gauge-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #00ff80;
+      font-family: monospace;
+      opacity: 0;
+      animation: fadeInDelay 0.8s ease 0.3s forwards;
+    }
+
+    @keyframes fadeInDelay {
+      to { opacity: 1; }
+    }
+
+    /* Enhanced loader */
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .loader.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #333;
+      border-top: 4px solid #00ff80;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Status text animation */
+    .status-text {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.4s ease;
+    }
+
+    .status-text.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Tab button glow effect */
+    .tab-btn.active {
+      box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 20px rgba(0, 255, 128, 0.3); }
+      to { box-shadow: 0 0 30px rgba(0, 255, 128, 0.7); }
+    }
+
+    /* File input enhancement */
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .file-input-wrapper:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Hero section animation */
+    .hero {
+      animation: slideUp 0.8s ease-out;
+    }
+
+    .hero h1 {
+      animation: slideUp 0.8s ease-out 0.2s backwards;
+    }
+
+    .hero .subtitle {
+      animation: slideUp 0.8s ease-out 0.4s backwards;
+    }
+
+    .options {
+      animation: slideUp 0.8s ease-out 0.6s backwards;
+    }
+
+    /* Scanner section animation */
+    .scanner {
+      animation: slideUp 0.8s ease-out 0.8s backwards;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Matrix Background -->
+  <canvas id="matrixBackground"></canvas>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Cyber Scanner Logo">
+      <span>Cyber Scanner</span>
+    </div>
+    <div class="links">
+      <a class="active" href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('news') }}">Blog</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container home">
+    <!-- Header -->
+    <header class="hero">
+      <h1>Threat Scanner</h1>
+      <p class="subtitle">
+        Scan URLs or upload files (PDF, DOCX, APK, etc.) to detect threats using VirusTotal.
+      </p>
+
+      <!-- Tab Buttons -->
+      <div class="options">
+        <button class="tab-btn active" data-tab="urlTab">Link Checker</button>
+        <button class="tab-btn" data-tab="fileTab">File Checker</button>
+      </div>
+    </header>
+
+    <!-- Scanner Section -->
+    <section class="scanner">
+      <!-- Link Checker -->
+      <div id="urlTab" class="tab-pane show">
+        <div class="input-row">
+          <input type="url" id="urlInput" placeholder="Paste URL here, e.g. https://example.com">
+          <button id="scanBtn" class="primary">Scan URL</button>
+        </div>
+      </div>
+
+      <!-- File Checker -->
+      <div id="fileTab" class="tab-pane">
+        <div class="input-row file-input-wrapper">
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.apk,.exe,.zip,.rar">
+          <button id="fileScanBtn" class="primary">Scan File</button>
+        </div>
+        <p class="hint">
+          Supported Files: PDF, DOC, DOCX, APK, EXE, ZIP, RAR
+        </p>
+      </div>
+
+      <!-- Loader -->
+      <div id="loading" class="loader hidden">
+        <div class="spinner"></div>
+        <span>Scanning…</span>
+      </div>
+    </section>
+
+    <!-- Results Section - Initially Hidden -->
+    <section id="resultBox" class="meter-container hidden">
+      <div class="gauge-wrap">
+        <canvas id="dangerMeter"></canvas>
+        <div class="gauge-center">
+          <div id="dangerValue">0%</div>
+          <span class="gauge-label">Danger</span>
+        </div>
+      </div>
+
+      <h2 id="dangerText" class="status-text">Awaiting scan…</h2>
+
+      <div class="stats">
+        <span id="statsTotal" class="pill">Total: 0</span>
+        <span id="statsMalicious" class="pill red">Malicious: 0</span>
+        <span id="statsSuspicious" class="pill amber">Suspicious: 0</span>
+        <span id="statsHarmless" class="pill green">Harmless: 0</span>
+        <span id="statsUndetected" class="pill slate">Undetected: 0</span>
+        <span id="statsTimeout" class="pill slate">Timeout: 0</span>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>💡 Start the backend server before scanning. See <code>README</code> for setup instructions.</p>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', filename='matrix.js') }}"></script>
+
+  <!-- Enhanced Tab Toggle Script with Animations -->
+  <script>
+    // Add ripple effect to buttons
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const circle = document.createElement("span");
+      const diameter = Math.max(button.clientWidth, button.clientHeight);
+      const radius = diameter / 2;
+      
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+      circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+      circle.classList.add("ripple");
+      
+      const ripple = button.getElementsByClassName("ripple")[0];
+      if (ripple) ripple.remove();
+      
+      button.appendChild(circle);
+    }
+
+    // Enhanced tab switching with animations
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', createRipple);
+      
+      button.addEventListener('click', () => {
+        // Remove active and show from all
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(tab => tab.classList.remove('show'));
+
+        // Activate clicked button and show respective tab with animation
+        button.classList.add('active');
+        const targetTab = document.getElementById(button.dataset.tab);
+        
+        setTimeout(() => {
+          targetTab.classList.add('show');
+        }, 50);
+      });
+    });
+
+    // Add ripple effect to primary buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.primary').forEach(btn => {
+        btn.addEventListener('click', createRipple);
+      });
+
+      // Add typing animation to input field
+      const urlInput = document.getElementById('urlInput');
+      if (urlInput) {
+        urlInput.addEventListener('focus', () => {
+          urlInput.style.transform = 'scale(1.02)';
+        });
+        
+        urlInput.addEventListener('blur', () => {
+          urlInput.style.transform = 'scale(1)';
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Scanner | BLOG</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* ======= Enhanced Interactive Styles ======= */
+    .news-container {
+      max-width: 1200px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    /* Search and Filter Bar */
+    .search-filter-bar {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 20px 0 30px 0;
+      padding: 20px;
+      background: rgba(17, 24, 39, 0.8);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 188, 212, 0.2);
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      background: rgba(31, 41, 55, 0.8);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #00bcd4;
+      box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+    }
+
+    .search-box input::placeholder {
+      color: #94a3b8;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #00bcd4;
+      pointer-events: none;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      background: rgba(31, 41, 55, 0.8);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      border-radius: 20px;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      border: none;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: #00bcd4;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 5px;
+      background: rgba(31, 41, 55, 0.8);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      border-radius: 8px;
+      padding: 5px;
+    }
+
+    .view-btn {
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .view-btn.active {
+      background: #00bcd4;
+      color: #fff;
+    }
+
+    /* Enhanced News Items */
+    .news-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111827;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid rgba(0, 188, 212, 0.1);
+    }
+
+    .news-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 188, 212, 0.2);
+      border-color: rgba(0, 188, 212, 0.3);
+    }
+
+    .news-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .news-item:hover::before {
+      left: 100%;
+    }
+
+    /* Grid View */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+    }
+
+    .news-grid .news-item {
+      flex-direction: column;
+      max-width: none;
+    }
+
+    .news-grid .news-image {
+      width: 100% !important;
+    }
+
+    .news-grid .news-content {
+      width: 100% !important;
+    }
+
+    /* Image Section */
+    .news-image {
+      width: 45%;
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .news-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .news-image img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Content Section */
+    .news-content {
+      width: 55%;
+      padding: 20px;
+      color: #fff;
+      position: relative;
+    }
+
+    .news-content .meta-info {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #64748b;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .news-content h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: #00bcd4;
+      transition: color 0.3s ease;
+    }
+
+    .news-item:hover .news-content h2 {
+      color: #fff;
+    }
+
+    .news-content p {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 15px;
+    }
+
+    .news-content button {
+      padding: 10px 20px;
+      background: #00bcd4;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .news-content button:hover {
+      background: #0097a7;
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+    }
+
+    .no-results h3 {
+      color: #00bcd4;
+      margin-bottom: 15px;
+      font-size: 24px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .search-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        min-width: auto;
+        margin-bottom: 15px;
+      }
+
+      .filter-buttons,
+      .view-toggle {
+        justify-content: center;
+      }
+
+      .news-item {
+        flex-direction: column;
+      }
+
+      .news-image,
+      .news-content {
+        width: 100%;
+      }
+
+      .news-image {
+        height: 180px;
+      }
+
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ======= Unique Cybersecurity-Themed Animations (No Text Glitch) ======= */
+
+@keyframes glitchEffect {
+  0%, 100% { transform: translate(0); }
+  10% { transform: translate(-2px, 2px); }
+  20% { transform: translate(2px, -2px); }
+  30% { transform: translate(-2px, -2px); }
+  40% { transform: translate(2px, 2px); }
+  50% { transform: translate(-2px, 2px); }
+  60% { transform: translate(2px, -2px); }
+  70% { transform: translate(-2px, -2px); }
+  80% { transform: translate(2px, 2px); }
+  90% { transform: translate(-2px, 2px); }
+}
+
+@keyframes scanLine {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes dataFlow {
+  0% { transform: translateY(100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0; }
+}
+
+@keyframes holographicShift {
+  0%, 100% { 
+    filter: hue-rotate(0deg) brightness(1);
+    border-color: rgba(0, 188, 212, 0.3);
+  }
+  25% { 
+    filter: hue-rotate(90deg) brightness(1.1);
+    border-color: rgba(0, 255, 127, 0.4);
+  }
+  50% { 
+    filter: hue-rotate(180deg) brightness(0.9);
+    border-color: rgba(255, 0, 255, 0.4);
+  }
+  75% { 
+    filter: hue-rotate(270deg) brightness(1.1);
+    border-color: rgba(255, 255, 0, 0.4);
+  }
+}
+
+@keyframes matrixRain {
+  0% { transform: translateY(-100px); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(calc(100vh + 100px)); opacity: 0; }
+}
+
+@keyframes circuitPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 5px rgba(0, 188, 212, 0.3),
+      inset 0 0 10px rgba(0, 188, 212, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 0 20px rgba(0, 188, 212, 0.8),
+      inset 0 0 20px rgba(0, 188, 212, 0.3),
+      0 0 40px rgba(0, 255, 255, 0.4);
+  }
+}
+
+@keyframes neuralNetwork {
+  0% { 
+    background-position: 0% 50%;
+    opacity: 0.3;
+  }
+  50% { 
+    background-position: 100% 50%;
+    opacity: 0.7;
+  }
+  100% { 
+    background-position: 200% 50%;
+    opacity: 0.3;
+  }
+}
+
+@keyframes textGlow {
+  0%, 100% { 
+    text-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+  }
+  50% { 
+    text-shadow: 
+      0 0 10px rgba(0, 188, 212, 0.8),
+      0 0 20px rgba(0, 188, 212, 0.6),
+      0 0 30px rgba(0, 188, 212, 0.4);
+  }
+}
+
+/* Apply unique animations */
+.news-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.news-container::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: 0;
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, #00bcd4, transparent);
+  animation: dataFlow 3s infinite linear;
+  animation-delay: 0s;
+}
+
+.news-container::after {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: 20px;
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, #00ff7f, transparent);
+  animation: dataFlow 3s infinite linear;
+  animation-delay: 1.5s;
+}
+
+/* Enhanced news items with cyber aesthetics */
+.news-item {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(17, 24, 39, 0.95) 0%, 
+    rgba(31, 41, 55, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  animation: none;
+  opacity: 0;
+  transform: perspective(1000px) rotateY(-15deg) translateZ(-50px);
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.news-item.animate-in {
+  opacity: 1;
+  transform: perspective(1000px) rotateY(0deg) translateZ(0px);
+}
+
+.news-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 188, 212, 0.8), 
+    transparent);
+  transform: translateX(-100%);
+  animation: scanLine 2s infinite;
+  animation-delay: calc(var(--item-index) * 0.3s);
+}
+
+.news-item:hover {
+  animation: holographicShift 3s infinite;
+  transform: perspective(1000px) rotateY(2deg) translateZ(20px) scale(1.02);
+  background: linear-gradient(135deg, 
+    rgba(17, 24, 39, 1) 0%, 
+    rgba(0, 188, 212, 0.1) 50%,
+    rgba(31, 41, 55, 1) 100%);
+}
+
+/* Enhanced title glow effect (no shaking) */
+.news-content h2 {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.news-item:hover .news-content h2 {
+  animation: textGlow 2s infinite;
+  transform: translateZ(10px);
+}
+
+/* Circuit board pattern for search bar */
+.search-filter-bar {
+  position: relative;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(0, 188, 212, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0, 255, 127, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(31, 41, 55, 0.9) 100%);
+  animation: circuitPulse 4s infinite;
+}
+
+.search-filter-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(90deg, transparent 98%, rgba(0, 188, 212, 0.3) 100%),
+    linear-gradient(0deg, transparent 98%, rgba(0, 188, 212, 0.3) 100%);
+  background-size: 50px 50px, 50px 50px;
+  animation: neuralNetwork 6s infinite;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+/* Advanced filter button animations */
+.filter-btn {
+  position: relative;
+  background: linear-gradient(45deg, 
+    rgba(31, 41, 55, 0.8) 0%, 
+    rgba(17, 24, 39, 0.8) 100%);
+  overflow: hidden;
+}
+
+.filter-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(0, 188, 212, 0.3), transparent);
+  transform: rotate(0deg);
+  transition: transform 0.6s ease;
+  opacity: 0;
+}
+
+.filter-btn:hover::before {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+.filter-btn.active::before {
+  opacity: 1;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Enhanced image hover effects */
+.news-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.news-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 188, 212, 0.03) 2px,
+      rgba(0, 188, 212, 0.03) 4px
+    );
+  transform: translateY(100%);
+  transition: transform 0.6s ease;
+}
+
+.news-item:hover .news-image::after {
+  transform: translateY(0);
+}
+
+/* Matrix-style loading effect */
+@keyframes matrixText {
+  0% { opacity: 1; }
+  50% { opacity: 0.1; }
+  100% { opacity: 1; }
+}
+
+.search-box input:focus {
+  background: rgba(31, 41, 55, 0.95);
+  animation: circuitPulse 2s infinite;
+}
+
+.search-box input:focus::placeholder {
+  animation: matrixText 1s infinite;
+}
+    
+  </style>
+</head>
+
+<body>
+  <canvas id="matrixBackground"></canvas>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Cyber Scanner Logo">
+      <span>Cyber Scanner</span>
+    </div>
+    <div class="links">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a class="active" href="{{ url_for('news') }}">Blog</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Main News Section -->
+  <main class="news-container">
+    <h1 style="
+      color: #00bcd4;
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      background: rgba(255, 255, 255, 0.05);
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+      📰 Cybersecurity News
+    </h1>
+
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search cybersecurity articles...">
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn" data-category="malware">Malware</button>
+        <button class="filter-btn" data-category="phishing">Phishing</button>
+        <button class="filter-btn" data-category="breach">Data Breach</button>
+        <button class="filter-btn" data-category="mobile">Mobile</button>
+      </div>
+
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="list" title="List View">📄</button>
+        <button class="view-btn" data-view="grid" title="Grid View">⚏</button>
+      </div>
+    </div>
+
+    <div id="newsContainer">
+      <!-- Article 1 -->
+      <div class="news-item" data-category="phishing" data-id="1">
+        <div class="news-image">
+          <img src="static/images/1.png" alt="Cybersecurity Update">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Sept 5, 2025</span>
+            <span class="meta-item">👁 <span id="views-1">1247</span> views</span>
+            <span class="meta-item">⏱ 5 min read</span>
+          </div>
+          <h2>URL-Based Threats Surge as Primary Attack Vector in 2025</h2>
+          <p>
+            URL-based cyber threats have dramatically overtaken traditional attachment-based attacks...
+          </p>
+          <button onclick="showArticle(1)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 2 -->
+      <div class="news-item" data-category="malware" data-id="2">
+        <div class="news-image">
+          <img src="static/images/2.png" alt="Security Breach">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Sept 4, 2025</span>
+            <span class="meta-item">👁 <span id="views-2">983</span> views</span>
+            <span class="meta-item">⏱ 7 min read</span>
+          </div>
+          <h2>ClickFix Malware Campaign Exploits Fake CAPTCHAs to Spread Cross-Platform</h2>
+          <p>
+            The ClickFix social engineering technique has evolved into one of the most dangerous cyber threats of 2025..
+          </p>
+          <button onclick="showArticle(2)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 3 -->
+      <div class="news-item" data-category="mobile" data-id="3">
+        <div class="news-image">
+          <img src="static/images/3.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Sept 3, 2025</span>
+            <span class="meta-item">👁 <span id="views-3">756</span> views</span>
+            <span class="meta-item">⏱ 6 min read</span>
+          </div>
+          <h2>QR Code Phishing Attacks Reach Record Highs with Advanced Evasion Techniques</h2>
+          <p>
+            QR code phishing, commonly known as "quishing," has reached unprecedented levels in 2025, with security
+            researchers ...
+          </p>
+          <button onclick="showArticle(3)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 4 -->
+      <div class="news-item" data-category="breach" data-id="4">
+        <div class="news-image">
+          <img src="static/images/4.png" alt="Data Breach">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Sept 2, 2025</span>
+            <span class="meta-item">👁 <span id="views-4">1542</span> views</span>
+            <span class="meta-item">⏱ 8 min read</span>
+          </div>
+          <h2>Major Data Breaches Expose 16 Billion Passwords in Unprecedented Cybersecurity Crisis</h2>
+          <p>
+            Major Data Breaches Expose 16 Billion Passwords in Unprecedented Cybersecurity Crisis...
+          </p>
+          <button onclick="showArticle(4)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 5 -->
+      <div class="news-item" data-category="mobile" data-id="5">
+        <div class="news-image">
+          <img src="static/images/5.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Sept 1, 2025</span>
+            <span class="meta-item">👁 <span id="views-5">892</span> views</span>
+            <span class="meta-item">⏱ 6 min read</span>
+          </div>
+          <h2>Smishing Attacks Surge 2,534% as Cybercriminals Target Mobile Users</h2>
+          <p>
+            SMS phishing attacks, commonly known as "smishing," have experienced explosive growth in 2025, with
+            campaigns
+            increasing by an ...
+          </p>
+          <button onclick="showArticle(5)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 6 -->
+      <div class="news-item" data-category="breach" data-id="6">
+        <div class="news-image">
+          <img src="static/images/6.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Aug 31, 2025</span>
+            <span class="meta-item">👁 <span id="views-6">672</span> views</span>
+            <span class="meta-item">⏱ 7 min read</span>
+          </div>
+          <h2>Corporate Email Platforms Targeted in Massive ShinyHunters Campaign</h2>
+          <p>
+            The ShinyHunters cybercriminal group (tracked as UNC6040) orchestrated one of the most sophisticated
+            corporate
+            targeting campaigns...
+          </p>
+          <button onclick="showArticle(6)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 7 -->
+      <div class="news-item" data-category="malware" data-id="7">
+        <div class="news-image">
+          <img src="static/images/7.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Aug 30, 2025</span>
+            <span class="meta-item">👁 <span id="views-7">834</span> views</span>
+            <span class="meta-item">⏱ 6 min read</span>
+          </div>
+          <h2>ClickFix Malware Spreads Across Government and Financial Sectors Worldwide</h2>
+          <p>
+            Government and financial institutions across multiple countries have become primary targets for ClickFix
+            malware
+            campaigns...
+          </p>
+          <button onclick="showArticle(7)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 8 -->
+      <div class="news-item" data-category="phishing" data-id="8">
+        <div class="news-image">
+          <img src="static/images/8.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Aug 29, 2025</span>
+            <span class="meta-item">👁 <span id="views-8">1156</span> views</span>
+            <span class="meta-item">⏱ 8 min read</span>
+          </div>
+          <h2>Proofpoint Research Reveals Massive Evolution in Phishing Attack Methodologies</h2>
+          <p>
+            Cybersecurity firm Proofpoint's comprehensive 2025 threat research has revealed fundamental shifts in
+            phishing
+            attack methodologies...
+          </p>
+          <button onclick="showArticle(8)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 9 -->
+      <div class="news-item" data-category="breach" data-id="9">
+        <div class="news-image">
+          <img src="static/images/9.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Aug 28, 2025</span>
+            <span class="meta-item">👁 <span id="views-9">1923</span> views</span>
+            <span class="meta-item">⏱ 9 min read</span>
+          </div>
+          <h2>Federal Judiciary Systems Breach Exposes Sealed Court Documents and Confidential Informants</h2>
+          <p>
+            The U.S. Federal Judiciary experienced one of the most significant cybersecurity breaches in government
+            history
+            during August 2025, with ...
+          </p>
+          <button onclick="showArticle(9)">Read More</button>
+        </div>
+      </div>
+
+      <!-- Article 10 -->
+      <div class="news-item" data-category="phishing" data-id="10">
+        <div class="news-image">
+          <img src="static/images/10.png" alt="Mobile Threats">
+        </div>
+        <div class="news-content">
+          <div class="meta-info">
+            <span class="meta-item">📅 Aug 27, 2025</span>
+            <span class="meta-item">👁 <span id="views-10">745</span> views</span>
+            <span class="meta-item">⏱ 6 min read</span>
+          </div>
+          <h2>Cisco Falls Victim to Sophisticated Voice Phishing Attack Compromising User Data</h2>
+          <p>
+            Cisco Systems, one of the world's largest networking and cybersecurity companies, fell victim to a
+            sophisticated
+            voice phishing (vishing)..
+          </p>
+          <button onclick="showArticle(10)">Read More</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+
+  <script src="{{ url_for('static', filename='matrix.js') }}"></script>
+  <script>
+    // Interactive Features
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', filterArticles);
+
+    function filterArticles() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
+      const articles = document.querySelectorAll('.news-item');
+      let visibleCount = 0;
+
+      articles.forEach(article => {
+        const title = article.querySelector('h2').textContent.toLowerCase();
+        const content = article.querySelector('p').textContent.toLowerCase();
+        const category = article.dataset.category;
+
+        const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+
+        if (matchesSearch && matchesCategory) {
+          article.style.display = 'flex';
+          visibleCount++;
+        } else {
+          article.style.display = 'none';
+        }
+      });
+
+      toggleNoResultsMessage(visibleCount === 0);
+    }
+
+    function toggleNoResultsMessage(show) {
+      let noResults = document.querySelector('.no-results');
+
+      if (show && !noResults) {
+        noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.innerHTML = `
+          <h3>No articles found</h3>
+          <p>Try adjusting your search terms or category filters</p>
+        `;
+        document.getElementById('newsContainer').appendChild(noResults);
+      } else if (!show && noResults) {
+        noResults.remove();
+      }
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        filterArticles();
+      });
+    });
+
+    // View toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const view = this.dataset.view;
+        const container = document.getElementById('newsContainer');
+
+        if (view === 'grid') {
+          container.className = 'news-grid';
+        } else {
+          container.className = '';
+        }
+
+      });
+    });
+
+    // View counter
+    function incrementViewCount(articleId) {
+      const viewElement = document.getElementById(`views-${articleId}`);
+      if (viewElement) {
+        let currentViews = parseInt(viewElement.textContent);
+        viewElement.textContent = currentViews + 1;
+      }
+    }
+
+    // Full article data
+    const articles = {
+      1: {
+        title: "URL-Based Threats Surge as Primary Attack Vector in 2025",
+        image: "static/images/1.png",
+        content: `
+          <p>URL-based cyber threats have dramatically overtaken traditional attachment-based attacks, with cybercriminals now favoring malicious links over file attachments by a ratio of 4:1, according to the latest Proofpoint research. Over a six-month period from late 2024 to early 2025, security researchers observed URL threats four times more frequently than attachment-based attacks, marking a fundamental shift in cybercriminal tactics.
+The preference for URL-based attacks stems from their superior evasion capabilities and higher success rates. Malicious URLs are significantly easier to disguise and more likely to bypass traditional security detection systems compared to malware-laden attachments. These links are strategically embedded in various communication channels including email messages, clickable buttons, and even within seemingly legitimate documents like PDFs and Word files to entice user interaction.
+Credential phishing has emerged as the primary objective for attackers, with 3.7 billion URL-based attacks specifically targeting login credentials during the first half of 2025. Rather than focusing on malware distribution, threat actors are concentrating their efforts on stealing authentication information that provides direct access to valuable accounts and systems.
+The ClickFix campaign represents one of the most concerning developments in URL-based threats, experiencing a 400% year-over-year increase in volume. This sophisticated technique lures victims into executing malicious code by displaying fake error messages or CAPTCHA verification screens. The method exploits users' natural desire to resolve perceived technical issues, making it an exceptionally effective tactic for malware operators seeking to spread remote access trojans (RATs), information stealers, and malware loaders.
+Attackers are increasingly employing advanced social engineering techniques combined with AI-generated content to create highly convincing campaigns. These operations often impersonate trusted brands and utilize off-the-shelf tools such as CoGUI and Darcula phishing kits, enabling even relatively unskilled cybercriminals to deploy sophisticated campaigns capable of bypassing multi-factor authentication (MFA) and achieving complete account takeovers.
+Mobile device targeting has intensified significantly, with QR code phishing threats exceeding 4.2 million incidents in the first half of 2025 alone. These attacks effectively remove users from enterprise security protections by leveraging personal mobile devices. Once scanned, malicious QR codes redirect victims to phishing sites designed to harvest sensitive information including credentials, credit card data, and personal identifiers, all while maintaining an appearance of legitimacy.
+Smishing campaigns experienced an extraordinary 2,534% increase as attackers pivot their focus toward mobile devices. Analysis reveals that at least 55% of suspected SMS-based phishing messages contained malicious URLs. These campaigns typically impersonate government communications or delivery services and achieve particular success due to the immediacy and trust users place in mobile text messages.
+The shift toward mobile-first targeting reflects threat actors' recognition that smartphones represent a significant security vulnerability. Mobile users often lack the same level of security awareness they might exercise on desktop computers, and mobile security solutions frequently provide less comprehensive protection against sophisticated URL-based threats.
+Enterprise security teams face mounting challenges in defending against these evolved tactics. Traditional email security filters and link scanners, while effective against older attack methodologies, struggle to identify sophisticated URL-based threats that leverage trusted platforms and familiar user experiences to exploit human psychology.
+Security experts emphasize that defending against modern URL-based threats requires a fundamental shift toward human-centric security strategies. Organizations must implement multilayered, AI-powered detection systems capable of identifying visually deceptive attacks while simultaneously investing in comprehensive user education programs that address the psychological manipulation tactics employed by cybercriminals.
+The rapid evolution of URL-based attack techniques demonstrates cybercriminals' ability to adapt quickly to changing security landscapes. As traditional defensive measures become less effective, organizations must adopt proactive approaches that combine advanced technological solutions with robust user awareness training to maintain effective protection against these emerging threats.
+</p>
+        `
+      },
+      2: {
+        title: "ClickFix Malware Campaign Exploits Fake CAPTCHAs to Spread Cross-Platform",
+        image: "static/images/2.png",
+        content: `
+          <p>The ClickFix social engineering technique has evolved into one of the most dangerous cyber threats of 2025, experiencing a 517% surge in activity over the past six months and becoming the second most common attack vector behind traditional phishing. This sophisticated manipulation tactic has fundamentally changed the cybersecurity landscape by exploiting users' natural desire to resolve technical problems. 
+ClickFix represents a psychological manipulation technique that presents victims with fake error messages or CAPTCHA verification screens, compelling them to copy and execute malicious PowerShell commands under the guise of fixing non-existent technical issues. The technique's effectiveness stems from its ability to bypass traditional security measures by convincing users to willingly install malware on their own systems. 
+'s comprehensive analysis revealed that ClickFix campaigns utilize multiple delivery vectors including phishing emails, malicious advertisements, compromised websites, and search engine optimization (SEO) poisoning to direct victims to deceptive pages. These pages display convincing error messages that guide users through a series of steps designed to execute covertly copied malicious commands when pasted into Windows Run dialog boxes or Terminal applications on macOS systems.
+The Lampion malware campaign, first identified in May 2025, exemplifies the sophistication of modern ClickFix operations. This campaign specifically targets Portuguese organizations in government, finance, and transportation sectors while spreading to other countries including Switzerland, Luxembourg, France, Hungary, and Mexico. The attack begins with phishing emails containing ZIP files that, when opened, redirect users to fake Portuguese tax authority websites hosting ClickFix lures.
+Multi-stage infection processes characterize advanced ClickFix campaigns, with the Lampion operation demonstrating remarkable technical sophistication. The attack chain involves downloading obfuscated VBScript files, scheduling hidden tasks, performing system reconnaissance, checking for antivirus or sandbox environments, and establishing communication with command-and-control servers before attempting final payload delivery.
+Cross-platform targeting has expanded ClickFix's threat scope, with researchers observing attacks affecting Windows, Linux, and macOS systems simultaneously. This broad compatibility makes ClickFix particularly dangerous for diverse enterprise environments where organizations operate mixed technology stacks.
+Nation-state actors have begun incorporating ClickFix techniques into their operations, with custom malware deployments observed from state-sponsored threat groups. This adoption by advanced persistent threat (APT) organizations indicates the technique's effectiveness and suggests continued evolution in sophistication and targeting precision.
+Commercial ClickFix builders have emerged in underground markets, enabling less skilled cybercriminals to deploy sophisticated ClickFix-weaponized landing pages without requiring advanced technical expertise. This commoditization of the technique contributes to its rapid proliferation across the threat landscape.
+The Singapore Cyber Security Agency issued urgent warnings about ongoing ClickFix campaigns affecting organizations across technology, financial services, manufacturing, retail, government, professional services, and utilities sectors. The agency emphasized that ClickFix bypasses traditional detection methods because attacks don't rely on exploits, attachments, or obviously malicious links.
+Clipboard hijacking represents the core mechanism behind ClickFix success, with malicious software secretly intercepting and modifying information that victims copy and paste. Recent campaigns use fake verification pages that request victims to complete verification processes before redirecting to intended webpages, creating an additional layer of social engineering manipulation.
+Payload diversity has expanded significantly, with ClickFix campaigns now delivering various malware families including NetSupport RAT, Latrodectus loader, Lumma Stealer, AsyncRAT, Danabot, DarkGate, cryptominers, and post-exploitation tools. This variety demonstrates the technique's versatility as a malware delivery mechanism.
+Detection challenges persist because ClickFix relies on legitimate system shells and user-initiated actions rather than exploiting software vulnerabilities. Traditional security solutions struggle to identify these attacks since they appear as normal user behavior rather than automated malicious activity.
+Organizations must implement comprehensive defense strategies including user education about fake CAPTCHA prompts, application whitelisting to prevent unauthorized script execution, enhanced monitoring for malicious PowerShell commands, and strict access controls to limit potential damage from successful compromises.
+
+</p>
+        `
+      },
+      3: {
+        title: "QR Code Phishing Attacks Reach Record Highs with Advanced Evasion Techniques",
+        image: "static/images/3.png",
+        content: `
+          <p>QR code phishing, commonly known as "quishing," has reached unprecedented levels in 2025, with security researchers identifying over 4.2 million QR code phishing threats in the first half of the year alone. This represents a dramatic escalation in cybercriminal exploitation of Quick Response codes, which have become ubiquitous in daily digital interactions.
+The surge in quishing attacks directly correlates with society's increased reliance on QR codes for various transactions and information sharing. From restaurant menus to payment systems, QR codes have become integral to modern digital experiences, creating an expansive attack surface that cybercriminals are systematically exploiting.
+Advanced evasion techniques have revolutionized quishing methodologies, with the Gabagool phishing-as-a-service (PhaaS) platform introducing split QR code attacks that divide malicious codes into two separate images embedded within phishing emails. This technique successfully evades traditional email security solutions that scan for complete QR codes, as security systems perceive two distinct and seemingly benign images rather than one unified malicious code.
+Nested QR code attacks represent another sophisticated evolution, where attackers embed QR codes within other QR codes to create multilayered deception. These "QR-in-QR" techniques add complexity that confuses automated detection systems while maintaining functionality for human victims who scan the outer code.
+The energy sector has emerged as a primary target, receiving 29% of all quishing emails, while retail organizations remain the most vulnerable industry overall. Business executives face disproportionate targeting, encountering quishing attacks 42 times more frequently than regular employees, reflecting cybercriminals' focus on high-value targets with greater system access and authority.
+ and Adobe rank among the most frequently impersonated brands in quishing campaigns, with attackers leveraging these trusted names to increase victim confidence in scanning malicious codes. Multi-factor authentication (MFA) reset scams comprise 27% of quishing attacks, with 56% specifically targeting  two-factor authentication systems, demonstrating cybercriminals' sophisticated understanding of enterprise security processes.
+AI-enhanced content generation has dramatically improved quishing campaign effectiveness, with 80% of phishing attacks now incorporating AI-generated elements. Artificial intelligence enables rapid creation of convincing phishing pages, personalized targeting based on scraped social media data, and real-time adaptation to security countermeasures.
+Physical world attacks have expanded beyond digital channels, with cybercriminals placing malicious QR code stickers over legitimate codes in public spaces including parking meters, restaurant tables, and promotional posters. These attacks exploit users' trust in physical QR codes and their assumption that codes in public spaces are legitimate.
+Mobile security bypasses represent a critical vulnerability, as QR code scanning typically occurs on personal mobile devices that may lack enterprise security protections. Once victims leave corporate network security perimeters by switching to mobile devices, they become significantly more vulnerable to credential theft and malware installation.
+Banking and financial services face particular risks from quishing attacks targeting online banking pages and mobile payment systems. Attackers create sophisticated replicas of financial institution login pages accessed through malicious QR codes, enabling direct theft of banking credentials and financial information.
+Real-world incidents demonstrate the technique's effectiveness across various scenarios. San Francisco experienced widespread fake parking ticket scams utilizing malicious QR codes, while Washington University discovered credential-stealing QR codes placed throughout campus facilities. These incidents highlight the technique's versatility and broad application potential.
+Detection statistics reveal concerning gaps in security awareness, with only 36% of QR code phishing incidents being accurately identified and reported by victims. This low detection rate indicates that the majority of quishing attacks succeed without detection, enabling continued exploitation and potential lateral movement within targeted organizations.
+Organizations must implement comprehensive quishing defenses including QR code scanner applications with built-in security verification, user education programs focused on QR code risks, policies restricting QR code usage in sensitive business processes, and enhanced mobile device management with security controls that extend to QR code interactions.
+
+</p>
+        `
+      },
+      4: {
+        title: "Major Data Breaches Expose 16 Billion Passwords in Unprecedented Cybersecurity Crisis",
+        image: "static/images/4.png",
+        content: `
+          <p>The cybersecurity landscape experienced a seismic shock in June 2025 when researchers discovered the largest data breach in recorded history, exposing 16 billion login credentials across over 30 separate datasets. This massive exposure included usernames, passwords, tokens, cookies, and metadata linked to major services including Facebook, Google, Apple, GitHub, and Telegram, representing an unprecedented threat to global digital security.
+The breach data primarily originated from infostealer malware campaigns, indicating that cybercriminals have been systematically harvesting credentials from infected devices over extended periods. Unlike traditional data breaches involving direct attacks on company servers, this incident represents the culmination of distributed malware operations targeting individual users' devices and browsers.
+Dataset analysis revealed staggering scope, with individual collections ranging from 16 million to more than 3.5 billion records, averaging approximately 550 million credentials per dataset. Security researchers emphasized that this represents fresh, recent data rather than recycled historical breaches, making the exposed credentials particularly dangerous for immediate exploitation.
+The Air France and KLM breach in August 2025 demonstrated ongoing vulnerabilities in third-party customer support systems, with attackers compromising platforms used by both airlines and potentially exposing passenger names, contact details, Flying Blue loyalty numbers, and service request email subject lines. Investigation findings linked this incident to broader campaigns targeting Salesforce CRM environments.
+ShinyHunters group (tracked as UNC6040) claimed responsibility for multiple high-profile breaches throughout 2025, including the Google Salesforce compromise affecting 2.55 million business contacts. The group's sophisticated voice phishing (vishing) techniques involved impersonating IT staff to persuade employees to authorize malicious applications disguised as legitimate Salesforce tools.
+Workday's data breach in August 2025 exemplified the continued targeting of human resources systems, with attackers gaining access through social engineering campaigns where threat actors impersonated HR or IT personnel via phone and text communications. The breach exposed business contact information including names, email addresses, and phone numbers, demonstrating persistent vulnerabilities in enterprise communication security.
+Session cookie exposure represents a particularly concerning aspect of the massive credential breach, as some leaked authentication cookies may enable attackers to bypass two-factor authentication entirely. These cookies provide direct access to authenticated sessions without requiring password verification, making them extremely valuable for cybercriminal operations.
+Business email compromise (BEC) risks have intensified dramatically following the massive exposure, with security experts warning that fresh credential data facilitates highly targeted phishing campaigns and account takeover attempts. The combination of accurate login information with associated metadata enables sophisticated impersonation attacks against both individuals and organizations.
+TeleMessage breach exposed critical vulnerabilities in government communication security, with hackers gaining access to a customized Signal application used by U.S. government officials for encrypted message archiving. The attacker accessed an AWS-hosted server within 20 minutes, exposing unencrypted data including names, message fragments, and contact information of personnel with .gov email addresses.
+Windows 11 security updates inadvertently created additional vulnerabilities, with the KB5063878 patch causing serious storage problems including drive failures and data corruption. Reports indicate that SSDs and HDDs disappear from Windows systems after installation, with file corruption occurring most frequently during heavy write activities such as large software updates.
+Cascading security failures demonstrate how individual breaches create opportunities for subsequent attacks. The 16 billion password exposure incident provides cybercriminals with vast databases of authentication information that can be used to conduct credential stuffing attacks against virtually any online service, regardless of whether those services experienced direct breaches.
+International implications of the massive breach extend beyond individual account security, with government communications, corporate intellectual property, and critical infrastructure access potentially compromised through exposed credentials. The global scope of affected services means that virtually every internet user faces elevated risk of account compromise.
+Security experts recommend immediate action including comprehensive password changes across all online accounts, mandatory multi-factor authentication implementation, suspicious activity monitoring, and enhanced email security measures to detect business email compromise attempts utilizing the exposed credential data.
+</p>
+        `
+      },
+      5: {
+        title: "Smishing Attacks Surge 2,534% as Cybercriminals Target Mobile Users",
+        image: "static/images/5.png",
+        content: `
+          <p>SMS phishing attacks, commonly known as "smishing," have experienced explosive growth in 2025, with campaigns increasing by an unprecedented 2,534% as cybercriminals pivot their focus toward mobile device exploitation. This dramatic surge reflects threat actors' recognition that smartphones represent a significant security vulnerability in modern enterprise environments.
+Mobile-first targeting has become the dominant strategy for cybercriminals, with at least 55% of suspected SMS-based phishing messages containing malicious URLs designed to harvest sensitive information or install malware. These campaigns typically impersonate trusted entities such as government agencies, delivery services, or financial institutions to maximize victim confidence and response rates.
+Bank impersonation represents the most common smishing tactic, accounting for 10% of all text message scams according to Federal Trade Commission data. Cybercriminals create convincing messages that appear to originate from legitimate financial institutions, often claiming account security issues or suspicious transaction alerts that require immediate victim response.
+Psychological manipulation techniques in smishing campaigns exploit urgency and fear to bypass rational security considerations. Messages frequently contain language suggesting immediate action requirements, such as account suspensions, missed package deliveries, or security breaches that demand rapid victim response
+This urgency creates emotional pressure that reduces victims' likelihood of verifying message authenticity.
+Voice over IP (VoIP) services have enabled sophisticated caller ID manipulation, allowing attackers to display specific phone numbers or company names that appear legitimate. This capability significantly enhances smishing campaign credibility, as victims often trust messages that appear to originate from recognizable phone numbers associated with legitimate organizations.
+Bring Your Own Device (BYOD) policies and remote work arrangements have expanded attack surfaces, as employees increasingly use personal mobile devices for business communications. This convergence of personal and professional mobile device usage creates opportunities for attackers to access corporate networks through compromised employee smartphones.
+AI-enhanced personalization has dramatically improved smishing effectiveness, with attackers leveraging artificial intelligence to create highly targeted messages based on publicly available social media information and data broker sources. These personalized approaches increase victim trust and response rates by incorporating specific details about targets' lives, locations, or interests.
+Financial sector targeting has intensified significantly, with smishing campaigns specifically designed to steal banking credentials, credit card information, and investment account access. These attacks often impersonate legitimate financial services communications, including transaction alerts, account verification requests, or fraud prevention notifications.
+Government impersonation represents another major smishing category, with cybercriminals creating messages that appear to originate from tax agencies, social security administration, or law enforcement organizations. A notable example involved attackers impersonating the U.S. Social Security Administration using combination of social engineering and domain spoofing to deliver ScreenConnect remote access tools.
+Multi-stage attack chains characterize sophisticated smishing operations, where initial SMS messages serve as entry points for more complex cybercrime activities. Successful smishing victims often face follow-up attacks including identity theft, financial fraud, or recruitment into money laundering operations through their compromised personal information.
+Mobile malware distribution through smishing has evolved beyond simple link clicking to include sophisticated social engineering that convinces victims to download malicious applications disguised as legitimate software updates or security tools. These malware applications often request extensive device permissions that enable comprehensive data harvesting and remote device control.
+Detection challenges persist because mobile devices typically receive less comprehensive security protection compared to desktop computers, and mobile security solutions frequently lack sophisticated anti-phishing capabilities. Additionally, the trusted nature of text messaging creates a psychological advantage for attackers compared to email-based phishing attempts.
+International scope of smishing campaigns has expanded dramatically, with cybercriminal organizations operating across multiple countries and languages to maximize target reach. This global approach enables attackers to exploit different regulatory environments and cultural contexts to enhance campaign effectiveness.
+Organizations must implement comprehensive smishing defense strategies including employee education about SMS-based threats, mobile device management solutions with anti-phishing capabilities, policies restricting business-related communications via personal SMS, and incident response procedures specifically designed for mobile device compromises
+</p>
+        `
+      },
+      6: {
+        title: "Corporate Email Platforms Targeted in Massive ShinyHunters Campaign",
+        image: "static/images/6.png",
+        content: `
+          <p>The ShinyHunters cybercriminal group (tracked as UNC6040) orchestrated one of the most sophisticated corporate targeting campaigns of 2025, successfully compromising major email and CRM platforms including Google's Salesforce, Air France-KLM customer systems, and Workday's HR infrastructure. This campaign demonstrates the evolution of social engineering tactics and the increasing vulnerability of cloud-based business systems.
+Voice phishing (vishing) techniques formed the cornerstone of ShinyHunters' success, with attackers posing as internal IT staff to persuade employees to authorize malicious applications disguised as legitimate business tools. The group's impersonation of Salesforce's Data Loader application enabled massive data extraction capabilities while completely bypassing technical security controls through human manipulation.
+Google Salesforce breach in June 2025 affected approximately 2.55 million business contacts, primarily consisting of small and medium business prospects for Google Ads services. The attackers obtained comprehensive business contact information including company names, phone numbers, and detailed customer relationship notes, demonstrating the valuable intelligence contained within corporate CRM systems.
+Multi-target strategy revealed ShinyHunters' systematic approach to corporate infiltration, with successful attacks against Cisco, Qantas, Adidas, LVMH brands, and multiple other high-profile organizations throughout 2025. This broad targeting indicates sophisticated operational capabilities and suggests coordination between multiple cybercriminal affiliates operating under the ShinyHunters banner.
+Air France and KLM compromise highlighted vulnerabilities in airline customer support systems, with attackers gaining access to passenger names, contact details, Flying Blue loyalty numbers, and service request email subject lines. The breach potentially exposed millions of travelers to follow-up phishing campaigns targeting airline customers with legitimate-appearing communications.
+Workday breach demonstrated persistent targeting of human resources systems, with attackers using social engineering to trick employees into granting access to third-party CRM platforms. The incident exposed business contact information while highlighting the risks associated with employee credential management and vendor access controls.
+Scattered Spider collaboration evidence suggests coordination between ShinyHunters and other major cybercriminal organizations, particularly in targeting airline industry infrastructure. Intelligence analysts identified tactical overlaps and shared infrastructure between groups, indicating possible affiliate relationships or coordinated campaign planning.
+Authentication bypass techniques employed by ShinyHunters demonstrate sophisticated understanding of enterprise security architectures. The group's ability to manipulate OAuth applications and bypass multi-factor authentication through social engineering highlights critical vulnerabilities in cloud-based authentication systems.
+Extortion operations represent the monetization strategy for ShinyHunters campaigns, though the group claimed their $2.3 million ransom demand against Google was made "in jest". This approach of combining data theft with public exposure threats creates multiple pressure points against victim organizations.
+Supply chain implications of the ShinyHunters campaign extend far beyond immediate breach victims, as compromised CRM data enables sophisticated targeting of customers and business partners. The exposed contact information provides cybercriminals with highly credible impersonation capabilities for follow-up attacks.
+Detection timeline analysis reveals concerning gaps in breach identification, with the Google incident occurring in June but not being publicly disclosed until August 5, 2025. This delayed detection enabled extended attacker presence within compromised systems and increased data exposure volumes.
+International law enforcement response to ShinyHunters operations remains limited due to the group's distributed nature and use of international hosting infrastructure. The organization's ability to operate across multiple jurisdictions complicates investigation and prosecution efforts.
+Cloud security implications of the ShinyHunters campaign highlight fundamental vulnerabilities in Software-as-a-Service (SaaS) platforms that rely heavily on user authentication and access controls. The successful social engineering attacks demonstrate that technical security measures are insufficient without comprehensive employee training and verification procedures.
+Organizations must implement enhanced security measures including mandatory verification procedures for IT support requests, comprehensive OAuth application monitoring, regular employee social engineering training, and incident response procedures specifically designed for cloud platform compromises to defend against similar attacks.
+</p>
+        `
+      },
+      7: {
+        title: "ClickFix Malware Spreads Across Government and Financial Sectors Worldwide",
+        image: "static/images/7.png",
+        content: `
+          <p>Government and financial institutions across multiple countries have become primary targets for ClickFix malware campaigns, with cybercriminals specifically designing attacks to exploit the trusted nature of official communications and financial services. The Singapore Cyber Security Agency's urgent alert in July 2025 highlighted the technique's broad impact across critical infrastructure sectors.
+Multi-sector targeting demonstrates ClickFix campaigns' versatility, with documented attacks affecting technology companies, financial services, manufacturing, wholesale and retail operations, government agencies, professional and legal services, utilities, and energy providers. This comprehensive targeting indicates cybercriminals' recognition that the technique's effectiveness transcends industry boundaries.
+Portuguese government impersonation campaigns exemplify the sophistication of modern ClickFix operations, with the Lampion malware specifically targeting government, finance, and transportation sectors by creating fake Portuguese tax authority websites. These sites closely replicate official government interfaces to enhance victim confidence and increase successful infection rates.
+International expansion of Portuguese-originating campaigns demonstrates cybercriminals' ability to scale successful attack methodologies across borders, with similar operations observed in Switzerland, Luxembourg, France, Hungary, and Mexico. This geographic expansion suggests either affiliate operations or the sale of successful attack templates to criminal organizations in multiple countries.
+U.S. Social Security Administration impersonation campaigns represent particularly concerning developments in government targeting, with attackers creating sophisticated email and website replicas that include legitimate social media account links and official imagery. These campaigns use Google Ads URL redirects to obfuscate final destinations while delivering ScreenConnect remote access tools.
+Banking sector vulnerabilities have made financial institutions attractive targets for ClickFix campaigns, with attackers exploiting customers' trust in banking communications and their urgency to resolve account security issues. Successful infections can lead to comprehensive financial data theft and unauthorized transaction capabilities.
+Critical infrastructure implications of ClickFix success rates create national security concerns, particularly when attacks target energy, transportation, and communication providers. Successful compromise of infrastructure operators could enable broader disruption campaigns affecting essential services and economic stability.
+Privilege escalation capabilities built into ClickFix malware enable attackers to move laterally across compromised networks, potentially accessing sensitive government systems and classified information. The technique's ability to bypass traditional security controls makes it particularly dangerous in high-security environments.
+Nation-state adoption of ClickFix techniques by advanced persistent threat (APT) groups indicates the method's strategic value for intelligence gathering and cyber espionage operations. Custom malware deployments from state-sponsored actors suggest long-term campaign planning and sophisticated targeting.
+Professional services targeting affects law firms, accounting practices, and consulting organizations that handle sensitive client information and maintain access to multiple business networks. Compromise of professional services can create supply chain attacks affecting dozens of client organizations simultaneously.
+Remote access tool deployment through ClickFix campaigns provides attackers with comprehensive system control, enabling data exfiltration, additional malware installation, surveillance capabilities, and potential participation in larger botnet operations. These tools often operate below detection thresholds for extended periods.
+Government contractor risks multiply the impact of successful ClickFix infections, as these organizations often maintain security clearances and access to sensitive government information while potentially having less robust cybersecurity controls than primary government agencies.
+Financial regulatory compliance challenges arise when ClickFix attacks successfully compromise banking and investment organizations, as data breaches can trigger extensive reporting requirements and regulatory investigations in addition to operational disruptions.
+Cross-border coordination requirements for effective ClickFix investigation and prosecution create challenges for law enforcement agencies, particularly when attack infrastructure spans multiple jurisdictions and legal frameworks.
+Government and financial organizations must implement enhanced security protocols including comprehensive user education about fake verification requests, application whitelisting to prevent unauthorized script execution, enhanced monitoring for suspicious PowerShell activity, strict access controls limiting privilege escalation opportunities, and incident response procedures specifically designed for ClickFix compromise scenarios.
+
+</p>
+        `
+      },
+      8: {
+        title: "Proofpoint Research Reveals Massive Evolution in Phishing Attack Methodologies",
+        image: "static/images/8.png",
+        content: `
+          <p>Cybersecurity firm Proofpoint's comprehensive 2025 threat research has revealed fundamental shifts in phishing attack methodologies, with traditional email-based campaigns evolving into sophisticated multi-channel operations that exploit human psychology across digital and physical attack vectors. The research indicates that modern phishing has become increasingly difficult to detect and dramatically more effective at bypassing security controls.
+AI-powered phishing generation now accounts for 80% of all phishing attacks, representing a massive increase from pre-2024 levels when artificial intelligence tools became widely accessible to cybercriminals. This AI integration enables rapid creation of highly personalized content that adapts to individual targets based on social media scraping and publicly available information.
+Credential phishing surge has increased by 1,265% since ChatGPT and similar AI tools launched, demonstrating the direct correlation between AI accessibility and cybercrime effectiveness. Attackers leverage large language models to generate convincing phishing content at unprecedented scale while maintaining high quality and personalization levels that traditionally required significant manual effort.
+Daily phishing volume has reached staggering proportions, with 3.4 billion phishing emails sent globally each day, representing 1.2% of all email traffic worldwide. This massive volume indicates the industrialization of phishing operations and the effectiveness of automated generation techniques in creating convincing malicious content.
+Organizational targeting frequency reveals that 57% of organizations face phishing attacks weekly or daily, indicating that phishing has become a persistent operational challenge rather than an occasional security incident. This consistent targeting suggests cybercriminals have developed sustainable business models around continuous phishing operations.
+Financial impact assessment shows that phishing-related data breaches cost organizations an average of $4.88 million per incident, with 94% of malware infections originating from phishing emails. These statistics demonstrate both the direct financial consequences of successful attacks and phishing's role as the primary attack vector for broader cybercriminal operations.
+Voice phishing (vishing) explosion represents one of the most dramatic attack evolution trends, with incidents increasing by 1,633% in Q1 2025 compared to Q4 2024. This massive surge indicates cybercriminals' recognition that voice communications often face less scrutiny than email and can bypass traditional email security controls entirely.
+Multi-generational targeting analysis reveals that Millennials and Gen-Z users are most likely to fall for phishing attacks, despite being considered "digital natives" with presumed high technology awareness. This counterintuitive finding suggests that familiarity with technology may create overconfidence that reduces security vigilance.
+Industry-specific targeting patterns show the IT software and services sector experiencing 26% of all phishing attacks, followed by heavy targeting of financial services, healthcare, and retail organizations.  impersonation accounts for 25% of phishing attacks, with Google (11%) and Apple (10%) also frequently impersonated.
+Advanced evasion techniques include zero-interaction exploits such as CVE-2025-53733 in  Word, enabling remote code execution without requiring user interaction. These technical advances eliminate the traditional requirement for victims to click links or open attachments, making infections completely transparent to targets.
+Business Email Compromise (BEC) evolution has resulted in $2.7 billion in losses during 2025, with attackers using AI to create highly convincing executive impersonation campaigns. These attacks leverage scraped corporate data and AI-generated content to create communications that appear authentic to employees and financial institutions.
+Quarantine alert manipulation represents a sophisticated evasion technique where attackers use compromised legitimate accounts to send messages mimicking email security quarantine notifications. These messages bypass email filters by originating from trusted accounts while directing victims to credential harvesting sites.
+Defense effectiveness statistics demonstrate that organizations implementing comprehensive security awareness training reduce susceptibility by up to 90%, while multi-layered security architectures block 80% of attacks. AI-powered defense tools detect 85% of phishing attempts, highlighting the importance of technological and human defense integration.
+Organizations must implement comprehensive anti-phishing strategies combining advanced AI-powered email security, regular employee simulation training, multi-factor authentication across all systems, and incident response procedures designed for modern multi-channel phishing campaigns to effectively counter these evolved threats.
+</p>
+        `
+      },
+      9: {
+        title: "Federal Judiciary Systems Breach Exposes Sealed Court Documents and Confidential Informants",
+        image: "static/images/9.png",
+        content: `
+          <p>The U.S. Federal Judiciary experienced one of the most significant cybersecurity breaches in government history during August 2025, with hackers successfully compromising the electronic case filing systems PACER (Public Access to Court Electronic Records) and CM/ECF (Case Management/Electronic Case Files). The sophisticated attack potentially exposed sealed indictments and confidential informant identities, raising unprecedented national security concerns.
+System architecture vulnerabilities in the federal court electronic filing infrastructure enabled attackers to access sensitive legal documents that should have remained confidential indefinitely. The breach demonstrates critical weaknesses in government cybersecurity implementations, particularly in systems handling the most sensitive legal proceedings in the United States.
+Sealed document exposure represents the most dangerous aspect of the breach, as sealed indictments often contain information about ongoing investigations, undercover operations, and pending arrests that could compromise law enforcement activities. The unauthorized access to this information could enable criminal organizations to evade justice or retaliate against cooperating witnesses.
+Confidential informant identification risks create life-threatening situations for individuals who have provided assistance to law enforcement agencies. The exposure of informant identities could result in witness intimidation, violence, or death, fundamentally undermining the federal government's ability to investigate and prosecute complex criminal organizations.
+State-sponsored attribution indicators suggest the attack may be linked to foreign intelligence services seeking access to sensitive U.S. legal proceedings and intelligence operations. The sophistication required to successfully breach federal court systems points toward advanced persistent threat (APT) groups with significant resources and capabilities.
+Operational impact on federal court proceedings could be substantial, as judges and attorneys may need to reassess the security of ongoing cases and potentially relocate or provide protection for exposed witnesses and informants. The breach may force delays in high-profile prosecutions and national security cases.
+Intelligence community implications extend beyond the judiciary, as court documents often contain information gathered through FBI, DEA, ATF, and other federal agency investigations. The breach could expose investigative techniques, surveillance capabilities, and intelligence sources used in national security and criminal investigations.
+International ramifications of the breach may affect cooperative law enforcement efforts with allied nations, as foreign governments may lose confidence in U.S. ability to protect sensitive shared intelligence and investigative information. This could impair future international cooperation in combating transnational crime and terrorism.
+Cybersecurity infrastructure assessment of federal government systems becomes critical following this breach, as it demonstrates that even high-security judicial systems remain vulnerable to sophisticated attacks. The incident may prompt comprehensive security reviews across all federal agencies and court systems.
+Legal precedent concerns arise regarding the admissibility of evidence and the validity of proceedings that may have been compromised by the breach. Defense attorneys may challenge prosecutions based on potential exposure of confidential information or investigation techniques revealed through the unauthorized access.
+Witness protection program implications require immediate assessment, as the breach may have compromised the identities or locations of individuals under federal protection. The U.S. Marshals Service and other protective agencies may need to relocate or enhance security for affected individuals.
+National security review processes must evaluate the full scope of intelligence and investigative information potentially exposed through the breach. This assessment may require coordination between multiple federal agencies to identify all affected operations and personnel.
+Congressional oversight responsibilities include investigating the circumstances of the breach, evaluating the adequacy of federal court cybersecurity measures, and ensuring appropriate remediation efforts. Lawmakers may mandate enhanced security requirements for all federal judicial systems.
+The federal judiciary must implement immediate security enhancements including comprehensive system security audits, enhanced access controls and monitoring, mandatory cybersecurity training for all court personnel, incident response procedures specifically designed for sensitive legal information breaches, and coordination protocols with law enforcement and intelligence agencies to assess and mitigate ongoing risks from the exposure.
+</p>
+        `
+      },
+      10: {
+        title: "Cisco Falls Victim to Sophisticated Voice Phishing Attack Compromising User Data",
+        image: "static/images/10.png",
+        content: `
+          <p>Cisco Systems, one of the world's largest networking and cybersecurity companies, fell victim to a sophisticated voice phishing (vishing) attack in August 2025 that resulted in unauthorized access to a third-party database containing user profile data from Cisco.com. This incident highlights how even cybersecurity industry leaders remain vulnerable to advanced social engineering techniques that bypass technical security controls.
+Voice phishing methodology employed against Cisco demonstrated the evolution of social engineering attacks beyond traditional email-based phishing toward direct human manipulation through telephone communications. The attackers successfully convinced a Cisco employee to provide system access through psychological manipulation techniques designed to create urgency and bypass normal security verification procedures.
+Third-party database compromise illustrates the complex interconnected nature of modern enterprise IT infrastructure, where corporate systems rely heavily on external service providers and cloud-based platforms. The breach demonstrates that even companies with robust internal security measures remain vulnerable through vendor and partner system weaknesses.
+User profile data exposure potentially affected an unknown number of Cisco.com users, with the breach compromising personal information stored in customer relationship management systems. This type of data exposure enables follow-up phishing attacks targeting Cisco customers with highly credible impersonation campaigns.
+Employee targeting specificity suggests attackers conducted reconnaissance to identify appropriate Cisco personnel with access to sensitive systems. This level of preparation indicates sophisticated threat actors with significant resources and detailed knowledge of Cisco's organizational structure and security procedures.
+Authentication bypass techniques used in the attack demonstrate how social engineering can circumvent multi-factor authentication and other technical security controls by manipulating human psychology rather than exploiting software vulnerabilities. The success highlights fundamental limitations of technology-centric security approaches that don't address human factors.
+Incident response timeline reveals the challenges organizations face in detecting and responding to vishing attacks, which often don't trigger traditional automated security alerts. The delayed detection common in social engineering attacks enables extended unauthorized access and increased data exposure.
+Industry reputation impact for Cisco as a cybersecurity vendor creates unique challenges, as customers and partners may question the company's security practices and the effectiveness of its security products. This reputational damage can have long-term business consequences beyond the immediate breach costs.
+Supply chain implications extend to Cisco's extensive partner and customer ecosystem, as compromised user data could be leveraged to target other organizations through apparent legitimate Cisco communications. The breach creates a trust relationship exploitation opportunity for cybercriminals.
+Regulatory compliance concerns arise from the user data exposure, potentially triggering notification requirements under various data protection regulations including GDPR, CCPA, and other regional privacy laws. Cisco may face regulatory investigations and potential penalties related to data protection failures.
+Cybersecurity industry lessons from the Cisco breach emphasize that technical security expertise doesn't eliminate vulnerability to human-targeted attacks. Even organizations with deep cybersecurity knowledge and advanced technical controls remain susceptible to sophisticated social engineering campaigns.
+Training and awareness gaps revealed by the incident suggest that traditional cybersecurity awareness programs may be insufficient to defend against advanced vishing techniques. Organizations need enhanced training that specifically addresses voice-based social engineering and verification procedures for unusual access requests.
+Threat actor sophistication demonstrated in the Cisco attack indicates criminal organizations are investing in advanced social engineering capabilities and conducting detailed target research before launching attacks. This evolution requires corresponding enhancements in organizational security awareness and response capabilities.
+Vendor risk management challenges highlighted by the breach emphasize the need for comprehensive third-party security assessments and ongoing monitoring of partner system security. Organizations must extend their security perimeter to encompass all connected systems and service providers.
+The Cisco incident demonstrates that comprehensive cybersecurity requires integration of technical controls with robust human-focused security measures including advanced social engineering awareness training, mandatory verification procedures for access requests, enhanced incident detection capabilities for social engineering attacks, and comprehensive vendor risk management programs.
+</p>
+        `
+      },
+
+    };
+
+    // Show article function
+    function showArticle(id) {
+      const article = articles[id];
+      if (!article) return;
+
+      incrementViewCount(id);
+
+      const popupContent = `
+        <html>
+          <head>
+            <title>${article.title}</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background: #111827;
+                color: #fff;
+                padding: 20px;
+                line-height: 1.6;
+              }
+              h1 {
+                color: #00bcd4;
+                font-size: 24px;
+                margin-bottom: 20px;
+              }
+              img {
+                max-width: 100%;
+                border-radius: 10px;
+                margin-bottom: 15px;
+              }
+              p {
+                font-size: 18px;
+                line-height: 1.6;
+                color: #cbd5e1;
+                margin-bottom: 15px;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${article.title}</h1>
+            <img src="${article.image}" alt="${article.title}">
+            ${article.content}
+          </body>
+        </html>
+      `;
+
+      const popup = window.open("", "ArticlePopup", "width=900,height=600,resizable=yes,scrollbars=yes");
+      popup.document.open();
+      popup.document.write(popupContent);
+      popup.document.close();
+    }    
+    
+// Updated JavaScript (replace the existing DOMContentLoaded section)
+document.addEventListener('DOMContentLoaded', function() {
+  const newsItems = document.querySelectorAll('.news-item');
+  
+  newsItems.forEach((item, index) => {
+    item.style.setProperty('--item-index', index);
+    
+    setTimeout(() => {
+      item.classList.add('animate-in');
+    }, index * 200);
+  });
+  
+  // Add cyber-style cursor effect
+  document.addEventListener('mousemove', function(e) {
+    const cursor = document.querySelector('.cyber-cursor');
+    if (!cursor) {
+      const newCursor = document.createElement('div');
+      newCursor.className = 'cyber-cursor';
+      newCursor.style.cssText = `
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        border: 1px solid rgba(0, 188, 212, 0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10000;
+        mix-blend-mode: difference;
+        transition: transform 0.1s ease;
+      `;
+      document.body.appendChild(newCursor);
+    }
+    
+    const actualCursor = document.querySelector('.cyber-cursor');
+    actualCursor.style.left = e.clientX - 10 + 'px';
+    actualCursor.style.top = e.clientY - 10 + 'px';
+  });
+});
+
+  </script>
+
+</body>
+
+</html>
